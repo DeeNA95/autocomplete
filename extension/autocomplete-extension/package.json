@@ -1,0 +1,167 @@
+{
+  "name": "autocomplete-extension",
+  "displayName": "autocomplete-extension",
+  "description": "AI-powered autocomplete",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/your-repo.git"
+  },
+  "engines": {
+    "vscode": "^1.102.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "autocomplete.setOpenAIApiKey",
+        "title": "Set OpenAI API Key"
+      },
+      {
+        "command": "ai-autocomplete.showLogs",
+        "title": "Show Logs"
+      },
+      {
+        "command": "autocomplete.indexWorkspace",
+        "title": "Autocomplete: Index Workspace"
+      },
+      {
+        "command": "autocomplete.triggerCompletion",
+        "title": "Autocomplete: Trigger Completion"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Autocomplete Extension Settings",
+      "properties": {
+        "autocomplete.excludedFiles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "List of file names to exclude from indexing."
+        },
+        "autocomplete.excludedExtensions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "description": "List of file extensions (without dot) to exclude from indexing."
+        },
+        "autocomplete.port": {
+          "type": "number",
+          "default": 2539,
+          "description": "Port for the autocomplete backend server."
+        },
+        "autocomplete.embeddingProvider": {
+          "type": "string",
+          "enum": [ "openai", "local", "huggingface" ],
+          "default": "openai",
+          "description": "Embedding provider to use for code similarity search."
+        },
+        "autocomplete.openai.model": {
+          "type": "string",
+          "default": "text-embedding-3-small",
+          "description": "OpenAI embedding model to use.",
+          "enum": [ "text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002" ]
+        },
+        "autocomplete.local.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:8080",
+          "description": "URL of the local embedding server."
+        },
+        "autocomplete.local.serverType": {
+          "type": "string",
+          "enum": [ "tei", "ollama", "custom" ],
+          "default": "tei",
+          "description": "Type of local embedding server (TEI, Ollama, or custom)."
+        },
+        "autocomplete.local.modelName": {
+          "type": "string",
+          "default": "",
+          "description": "Model name for local embedding server (if required)."
+        },
+        "autocomplete.local.timeout": {
+          "type": "number",
+          "default": 30,
+          "description": "Timeout in seconds for local embedding requests."
+        },
+        "autocomplete.huggingface.modelId": {
+          "type": "string",
+          "default": "BAAI/bge-small-en-v1.5",
+          "description": "HuggingFace model ID for embeddings (e.g., BAAI/bge-small-en-v1.5, sentence-transformers/all-MiniLM-L6-v2)."
+        },
+        "autocomplete.huggingface.cacheDir": {
+          "type": "string",
+          "default": "./models",
+          "description": "Directory to cache downloaded HuggingFace models."
+        },
+        "autocomplete.huggingface.useGpu": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to use GPU acceleration for HuggingFace models."
+        },
+        "autocomplete.huggingface.maxLength": {
+          "type": "number",
+          "default": 512,
+          "description": "Maximum input text length for HuggingFace embeddings."
+        },
+        "autocomplete.huggingface.batchSize": {
+          "type": "number",
+          "default": 1,
+          "description": "Batch size for HuggingFace embedding requests."
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "autocomplete.triggerCompletion",
+        "key": "ctrl+;",
+        "when": "editorTextFocus && !isComposing"
+      },
+      {
+        "command": "autocomplete.triggerCompletion",
+        "key": "cmd+;",
+        "mac": "cmd+;",
+        "when": "editorTextFocus && !isComposing"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "sh ../../scripts/build.sh && webpack",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "npm run build && vsce package",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/eventsource": "^1.1.15",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.102.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.6.0",
+    "eslint": "^9.25.1",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.99.7",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "eventsource": "^2.0.2",
+    "find-process": "^1.4.7"
+  }
+}

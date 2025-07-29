@@ -1,0 +1,30 @@
+# Vector Search Test and Demo Executables
+# These files are for development/testing only and should not be included in builds
+test_hnsw
+test_vector_search
+vector_search_demo
+vector_search_test
+hnsw_test
+
+# Compiled object files (keep the main one for build)
+*.o
+
+
+# Static libraries (keep the main ones for build)
+*.a
+
+
+# Temporary build files
+*.tmp
+*.temp
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db

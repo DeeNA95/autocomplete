@@ -1,0 +1,141 @@
+# Makefile.dev - Development and Testing Builds Only
+# ===================================================
+# This Makefile is for building test and demo executables ONLY.
+# It should NOT be used by the main build system.
+
+# Compiler settings
+CC = gcc
+CFLAGS = -Wall -Wextra -std=c99 -O2 -DVECTOR_SEARCH_DEVELOPMENT_BUILD
+LDFLAGS = -lm
+
+# Source files
+VECTOR_SEARCH_SRC = vector_search.c
+VECTOR_SEARCH_OBJ = vector_search.o
+TEST_SRC = test_vector_search.c
+DEMO_SRC = vector_search_example.c
+
+# Output executables (development only)
+TEST_EXEC = test_hnsw
+DEMO_EXEC = vector_search_demo
+
+# Default target - build all development executables
+.PHONY: all
+all: $(TEST_EXEC) $(DEMO_EXEC)
+
+# Build object file
+$(VECTOR_SEARCH_OBJ): $(VECTOR_SEARCH_SRC) vector_search.h
+	@echo "🔨 Compiling vector search library..."
+	$(CC) $(CFLAGS) -c $(VECTOR_SEARCH_SRC) -o $(VECTOR_SEARCH_OBJ)
+
+# Build test executable
+$(TEST_EXEC): $(TEST_SRC) $(VECTOR_SEARCH_OBJ)
+	@echo "🧪 Building test executable..."
+	$(CC) $(CFLAGS) $(TEST_SRC) $(VECTOR_SEARCH_OBJ) -o $(TEST_EXEC) $(LDFLAGS)
+
+# Build demo executable
+$(DEMO_EXEC): $(DEMO_SRC) $(VECTOR_SEARCH_OBJ)
+	@echo "📚 Building demo executable..."
+	$(CC) $(CFLAGS) $(DEMO_SRC) $(VECTOR_SEARCH_OBJ) -o $(DEMO_EXEC) $(LDFLAGS)
+
+# Run tests
+.PHONY: test
+test: $(TEST_EXEC)
+	@echo "🚀 Running vector search tests..."
+	./$(TEST_EXEC)
+
+# Run demo
+.PHONY: demo
+demo: $(DEMO_EXEC)
+	@echo "🎯 Running vector search demo..."
+	./$(DEMO_EXEC)
+
+# Run both test and demo
+.PHONY: run-all
+run-all: test demo
+
+# Clean development builds (keeps production files)
+.PHONY: clean
+clean:
+	@echo "🧹 Cleaning development builds..."
+	rm -f $(TEST_EXEC) $(DEMO_EXEC)
+	@echo "✅ Development executables removed"
+
+# Clean everything including object files
+.PHONY: clean-all
+clean-all: clean
+	@echo "🧹 Cleaning all build artifacts..."
+	rm -f $(VECTOR_SEARCH_OBJ) *.a
+	@echo "⚠️  Production build files removed - run main build to recreate"
+
+# Development build verification
+.PHONY: verify
+verify:
+	@echo "🔍 Verifying development build setup..."
+	@if [ -f "$(VECTOR_SEARCH_SRC)" ]; then \
+		echo "✅ Source file found: $(VECTOR_SEARCH_SRC)"; \
+	else \
+		echo "❌ Source file missing: $(VECTOR_SEARCH_SRC)"; \
+		exit 1; \
+	fi
+	@if [ -f "vector_search.h" ]; then \
+		echo "✅ Header file found: vector_search.h"; \
+	else \
+		echo "❌ Header file missing: vector_search.h"; \
+		exit 1; \
+	fi
+	@if [ -f "$(TEST_SRC)" ]; then \
+		echo "✅ Test file found: $(TEST_SRC)"; \
+	else \
+		echo "❌ Test file missing: $(TEST_SRC)"; \
+		exit 1; \
+	fi
+	@if [ -f "$(DEMO_SRC)" ]; then \
+		echo "✅ Demo file found: $(DEMO_SRC)"; \
+	else \
+		echo "❌ Demo file missing: $(DEMO_SRC)"; \
+		exit 1; \
+	fi
+	@echo "✅ All development files present"
+
+# Help target
+.PHONY: help
+help:
+	@echo "Vector Search Development Makefile"
+	@echo "=================================="
+	@echo ""
+	@echo "⚠️  WARNING: This Makefile is for development/testing ONLY"
+	@echo "   It should NOT be used by the main build system"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  all       - Build all development executables"
+	@echo "  test      - Build and run tests"
+	@echo "  demo      - Build and run demo"
+	@echo "  run-all   - Run both tests and demo"
+	@echo "  verify    - Verify all source files are present"
+	@echo "  clean     - Remove development executables only"
+	@echo "  clean-all - Remove all build artifacts (⚠️  includes production files)"
+	@echo "  help      - Show this help message"
+	@echo ""
+	@echo "Examples:"
+	@echo "  make test     # Build and run tests"
+	@echo "  make demo     # Build and run demo"
+	@echo "  make verify   # Check if all files are present"
+	@echo "  make clean    # Clean development builds"
+
+# Prevent accidental inclusion in main build
+.PHONY: production-warning
+production-warning:
+	@echo "❌ ERROR: This is a development Makefile"
+	@echo "   Use the main build script: ../../../scripts/build.sh"
+	@echo "   Or build manually: gcc -c vector_search.c && ar rcs libvectorsearch.a vector_search.o"
+	@exit 1
+
+# Safety check - prevent common production build commands
+.PHONY: install
+install: production-warning
+
+.PHONY: deploy
+deploy: production-warning
+
+.PHONY: release
+release: production-warning
