@@ -46,10 +46,15 @@ func runServerWithAPIKey(openaiAPIKey string) {
 	defer vectorStore.Close()
 
 	// Use injected OpenAI API key string for completions (still using OpenAI for text generation)
+	// Create OpenAI client for completions (still using OpenAI for text generation)
 	if openaiAPIKey == "" {
 		log.ErrorLogger.Fatalln("FATAL: OpenAI API key must be provided to run the server.")
 	}
-	openaiClient := completer.NewOpenAIClient(openaiAPIKey)
+	completionModel := config.Embedding.CompletionModel
+	if completionModel == "" {
+		completionModel = "gpt-4.1-nano"
+	}
+	openaiClient := completer.NewOpenAIClientWithModel(openaiAPIKey, completionModel)
 
 	// Create completion service with configurable embedder but OpenAI for completions
 	embCache := cache.NewInMemoryCache()

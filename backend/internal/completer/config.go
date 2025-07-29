@@ -27,11 +27,12 @@ type Config struct {
 
 // EmbeddingConfig holds configuration for embedding providers
 type EmbeddingConfig struct {
-	Provider    EmbeddingProvider `json:"provider"`
-	OpenAI      OpenAIConfig      `json:"openai"`
-	Local       LocalConfig       `json:"local"`
-	HuggingFace HuggingFaceConfig `json:"huggingface"`
-	Dimensions  int               `json:"dimensions"` // Auto-detected if 0
+	Provider        EmbeddingProvider `json:"provider"`
+	OpenAI          OpenAIConfig      `json:"openai"`
+	Local           LocalConfig       `json:"local"`
+	HuggingFace     HuggingFaceConfig `json:"huggingface"`
+	Dimensions      int               `json:"dimensions"`       // Auto-detected if 0
+	CompletionModel string            `json:"completion_model"` // For text completion (OpenAI)
 }
 
 // OpenAIConfig holds OpenAI-specific configuration
@@ -102,6 +103,9 @@ func LoadConfig() (*Config, error) {
 	if model := os.Getenv("OPENAI_EMBEDDING_MODEL"); model != "" {
 		config.Embedding.OpenAI.Model = model
 	}
+	if completionModel := os.Getenv("OPENAI_COMPLETION_MODEL"); completionModel != "" {
+		config.Embedding.CompletionModel = completionModel
+	}
 
 	// Load local embedding configuration
 	if serverURL := os.Getenv("LOCAL_EMBEDDING_URL"); serverURL != "" {
@@ -117,6 +121,10 @@ func LoadConfig() (*Config, error) {
 		if timeout, err := strconv.Atoi(timeoutStr); err == nil && timeout > 0 {
 			config.Embedding.Local.Timeout = timeout
 		}
+	}
+	// Set default completion model to empty string if not set (set default during client creation)
+	if config.Embedding.CompletionModel == "" {
+		config.Embedding.CompletionModel = ""
 	}
 
 	// Load HuggingFace configuration

@@ -89,11 +89,33 @@ function startBackendProcess(
     );
 
     // Compose environment variables from config and exclude lists
+    // Read OpenAI completion model from configuration
+    // const configuration = vscode.workspace.getConfiguration("autocomplete");
+    const completionModel: string = configuration.get(
+      "openai.completionModel",
+      "gpt-4.1-nano",
+    );
+
+    // Build environment variables from configuration
+    const normalizedCompletionModel = completionModel.toLowerCase();
+    const allowedCompletionModels = [
+      "gpt-4o",
+      "gpt-4",
+      "gpt-4.1",
+      "gpt-4.1-mini",
+    ];
+    const completionModelFinal = allowedCompletionModels.includes(
+      normalizedCompletionModel,
+    )
+      ? normalizedCompletionModel
+      : "gpt-4.1-nano";
+
     const env = {
       ...process.env,
       OPENAI_API_KEY_INJECTED: openaiApiKey,
       EMBEDDING_PROVIDER: embeddingConfig.provider,
       OPENAI_EMBEDDING_MODEL: embeddingConfig.openai.model,
+      OPENAI_COMPLETION_MODEL: completionModelFinal,
       LOCAL_EMBEDDING_URL: embeddingConfig.local.serverUrl,
       LOCAL_EMBEDDING_SERVER_TYPE: embeddingConfig.local.serverType,
       LOCAL_EMBEDDING_MODEL: embeddingConfig.local.modelName,

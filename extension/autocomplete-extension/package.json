@@ -42,13 +42,17 @@
       "properties": {
         "autocomplete.excludedFiles": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "default": [],
           "description": "List of file names to exclude from indexing."
         },
         "autocomplete.excludedExtensions": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "default": [],
           "description": "List of file extensions (without dot) to exclude from indexing."
         },
@@ -59,15 +63,34 @@
         },
         "autocomplete.embeddingProvider": {
           "type": "string",
-          "enum": [ "openai", "local", "huggingface" ],
+          "enum": [
+            "openai",
+            "local",
+            "huggingface"
+          ],
           "default": "openai",
           "description": "Embedding provider to use for code similarity search."
         },
-        "autocomplete.openai.model": {
+        "autocomplete.openai.embeddingModel": {
           "type": "string",
           "default": "text-embedding-3-small",
-          "description": "OpenAI embedding model to use.",
-          "enum": [ "text-embedding-3-small", "text-embedding-3-large", "text-embedding-ada-002" ]
+          "description": "OpenAI embedding model to use for code similarity.",
+          "enum": [
+            "text-embedding-3-small",
+            "text-embedding-3-large",
+            "text-embedding-ada-002"
+          ]
+        },
+        "autocomplete.openai.completionModel": {
+          "type": "string",
+          "default": "gpt-4.1-nano",
+          "description": "OpenAI completion model to use.",
+          "enum": [
+            "gpt-4o",
+            "gpt-4",
+            "gpt-4.1",
+            "gpt-4.1-mini"
+          ]
         },
         "autocomplete.local.serverUrl": {
           "type": "string",
@@ -76,7 +99,11 @@
         },
         "autocomplete.local.serverType": {
           "type": "string",
-          "enum": [ "tei", "ollama", "custom" ],
+          "enum": [
+            "tei",
+            "ollama",
+            "custom"
+          ],
           "default": "tei",
           "description": "Type of local embedding server (TEI, Ollama, or custom)."
         },
